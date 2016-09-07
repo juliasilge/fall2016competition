@@ -1,0 +1,179 @@
+---
+title: "Exploratory Data Analysis of College Scorecard Data"
+author: "Julia Silge"
+date: "`r Sys.Date()`"
+output:
+  html_document:
+    highlight: pygments
+    theme: paper
+    toc: yes
+---
+
+```{r, echo = FALSE, warning = FALSE}
+library(knitr)
+knitr::opts_chunk$set(cache = TRUE, warning = FALSE, message = FALSE, dpi = 180)
+options(width=100, dplyr.width = 150)
+```
+
+The [College Scorecord](https://collegescorecard.ed.gov/) is a website and set of data that allows students and those who support them to access information about U.S. colleges/university and understand it. The developers and analysts who maintain the College Scorecard have their [GitHub repository public](https://github.com/RTICWDT/college-scorecard), and they have extensive information on the [data behind the scorecard](https://collegescorecard.ed.gov/data/) including [detailed documentation](https://collegescorecard.ed.gov/data/documentation/).
+
+## What Is In the College Scorecard Data?
+
+I have downloaded the data available at the "Download All Data" button on [this site](https://collegescorecard.ed.gov/data/); it contains separate CSV files for several years. For starters, let's just open up the most recent year of data. (There are also CSV files for the years 1996 - 2012; it may be worth using some of that data as well.) Let's also open up the data dictionary.
+
+```{r}
+library(readr)
+colleges <- read_csv("data/merged_2013_PP.csv", na = c("NULL", "PrivacySuppressed"))
+dictionary <- read_csv("data/CollegeScorecardDataDictionary-09-08-2015.csv")
+```
+
+What is here? How much of this data frame is `NA`?
+
+```{r}
+dim(colleges)
+sapply(colleges, function(x) sum(is.na(x)))
+```
+
+That's quite a lot of `NA` values, which is going to be an issue for clustering algorithms. Let's make a heatmap of some scaled values so we can see what is going on here with missing values.
+
+```{r, fig.width=10, fig.height=12}
+library(Amelia)
+missmap(colleges, col=c("gray90", "navy"), legend = FALSE, rank.order = FALSE,
+        y.labels = NULL, y.at = NULL)
+```
+
+## Start to Clean This Up
+
+At the very least, let's remove the rows that are all `NA`.
+
+```{r}
+colleges <- Filter(function(x)!all(is.na(x)), colleges)
+dim(colleges)
+```
+
+Now, just for a first go at some analysis, let's pick out some columns that we think are likely to be meaningful.
+
+```{r}
+library(dplyr)
+college_subset <- colleges %>% 
+    select(OPEID, INSTNM, CITY, STABBR, ZIP, 
+           main, LOCALE, HIGHDEG, CONTROL, CCBASIC, HBCU, WOMENONLY, 
+           ADM_RATE, SAT_AVG, UGDS, PPTUG_EF, TUITIONFEE_IN, AVGFACSAL, 
+           PCTFLOAN, C150_4, DEBT_MDN, DEP_INC_AVG)
+```
+
+What are the quantities I have chosen here, for a first go at some analysis?
+
+```{r}
+dictionary %>% filter(`VARIABLE NAME` %in% names(college_subset)) %>% select(`NAME OF DATA ELEMENT`)
+```
+
+There are still lots of `NA` values here, so just to get started here, let's only keep the schools that have reported values for all of these observations. How many does that give us?
+
+```{r}
+college_subset <- college_subset[complete.cases(college_subset),]
+dim(college_subset)
+```
+
+## Principal Component Analysis
+
+Let's take a look at how these variables are related to each other using principal component analysis. First, let's scale the values and then do PCA.
+
+```{r}
+college_names <- college_subset$INSTNM
+college_SAT <- college_subset$SAT_AVG
+college_subset <- college_subset[,6:22]
+college_subset <- scale(college_subset)
+college_pca <- prcomp(college_subset)
+```
+
+Let's see what the first few of the principal components look like.
+
+```{r, fig.width=8, fig.height=8}
+library(reshape2)
+library(ggplot2)
+melted <- melt(college_pca$rotation[,1:9])
+ggplot(data = melted) +
+    theme(legend.position = "none", axis.text.x = element_blank(), 
+          axis.ticks.x = element_blank()) + 
+    labs(x = "Measurements in College Scorecard data",
+        y = "Relative importance in each principle component",
+        title = "Variables in Principal Component Analysis") +
+    geom_bar(aes(x=Var1, y=value, fill=Var1), stat="identity") +
+    facet_wrap(~Var2)
+```
+
+Each of these components are orthogonal to each other, and the colored bars show the contribution of each original measurement in the College Scorecard to that principal component. Each principal component is uncorrelated to the others and together, the principal components contain the information in the data set. Let’s zoom in on the first principal component, the one that has the largest variance and accounts for the most variability between the colleges.
+
+
+```{r, fig.width=8, fig.height=6}
+ggplot(data = melted[melted$Var2 == "PC1",]) +
+    theme(legend.position = "none", 
+          axis.text.x= element_text(angle=45, hjust = 1), 
+          axis.ticks.x = element_blank()) + 
+    labs(x = "Measurements in College Scorecard data",
+         y = "Relative importance in principle component",
+         title = "Variables in PC1") +
+    geom_bar(aes(x=Var1, y=value, fill=Var1), stat="identity")
+```
+
+The biggest contributors to this principal component (and thus to the variation between colleges in this subset of colleges) are SAT score and completion rate, followed by faculty salary and students' family income. It appears that this principal component is finding schools with students who did well on the SAT score, complete college at a high rate, and come from high-income families (also the professors are paid well there). (Notice that all those values go in the negative direction, so the value for this principal component will be negative for these types of schools.)
+
+We could look at the other principal components to look for lower level effects, and we probably should.
+
+## First Attempt at Clustering
+
+Now let's see if we can do some clustering with this subset of the colleges. I'm going to start with k-means clustering. Let's use the broom package to explore how many clusters may be appropriate for this data set. For starters, let's try out 4 to 12 clusters.
+
+```{r}
+library(broom)
+library(tidyr)
+set.seed(1234)
+kclusts <- data.frame(k=4:18) %>% 
+    group_by(k) %>% 
+    do(kclust = kmeans(college_subset, .$k))
+```
+
+Now let's use `tidy`, `augment`, and `glance` to organize these various sets of k-means clusterings.
+
+```{r}
+clusters <- kclusts %>% group_by(k) %>% do(tidy(.$kclust[[1]]))
+assignments <- kclusts %>% group_by(k) %>% do(augment(.$kclust[[1]], college_subset))
+clusterings <- kclusts %>% group_by(k) %>% do(glance(.$kclust[[1]]))
+```
+
+Specifically, let's look at the total within sum of squares, saved in the `tot.withinss` column in `clusterings`. This shows us the variance within the clusters.
+
+```{r, fig.width=8, fig.height=6}
+library(ggfortify)
+ggplot(clusterings, aes(k, tot.withinss)) +
+    geom_line(color = "blue", alpha = 0.5, size = 2) +
+    geom_point(size = 0.8)
+```
+
+Notice that the variance decreases with more clusters, but there is a "bend" around 10 clusters. This tells us that for this particular subset of colleges, we don't gain as much by going beyond 10 clusters. Let's look at how the colleges are distributed in the space of principal component 1 and 2, clustered with $k = 10$.
+
+```{r, fig.width=10, fig.height=8}
+set.seed(1234)
+autoplot(kmeans(college_subset, 10), data = college_subset, size = 3, alpha = 0.8) + 
+    ggtitle("K-Means Clustering of College Scorecard Data") +
+    theme(legend.position="none")
+```
+
+Remember that the colleges with very negative values of PC1 were colleges where the students have high SAT scores, high completion rates, high family income levels, and the faculty have high salaries. Let's label a few of them.
+
+```{r, fig.width=10, fig.height=8}
+library(ggrepel)
+set.seed(1234)
+rownames(college_subset) <- college_names
+autoplot(kmeans(college_subset, 10), data = college_subset, size = 3, alpha = 0.8) + 
+    ggtitle("K-Means Clustering of College Scorecard Data") +
+    theme(legend.position="none") +
+    geom_text_repel(aes(PC1, PC2, 
+                         color = factor(kmeans(college_subset, 10)$cluster), 
+                         label = ifelse(college_SAT > 1475,rownames(college_subset),'')),
+                     segment.color = NA)
+```
+
+Some of these clusters are overlapping as viewed in this space (PC1 and PC2) but they may be more separated in other components/dimensions.
+
