@@ -58,7 +58,7 @@ order by 1,2,3 desc
 
 
 train<- dbGetQuery(db, "
-select year
+select year,LOWER(INSTNM),ZIP
 ,PREDDEG,HIGHDEG,CONTROL
 ,HBCU
 ,PBI
