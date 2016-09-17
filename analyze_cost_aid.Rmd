@@ -1,0 +1,154 @@
+---
+title: "Exploring Cost and Aid Factors in College Scorecard Data"
+author: "Julia Silge"
+date: "`r Sys.Date()`"
+output:
+  html_document:
+    highlight: pygments
+    theme: paper
+    toc: yes
+---
+
+```{r, echo = FALSE, warning = FALSE}
+library(knitr)
+knitr::opts_chunk$set(cache = TRUE, warning = FALSE, message = FALSE, dpi = 180)
+options(width=100, dplyr.width = 150)
+```
+
+For this next stage in our team's project, my role is to explore and understand better the variables in the [College Scorecard data]((https://collegescorecard.ed.gov/data/)) that are related to *cost* and *aid*. Let's check it out.
+
+## Finding the Cost and Aid Variables
+
+Let's open up the College Scorecard data and remove the rows that are all `NA`.
+
+```{r}
+library(readr)
+colleges <- read_csv("data/merged_2013_PP.csv", na = c("NULL", "PrivacySuppressed"))
+colleges <- Filter(function(x)!all(is.na(x)), colleges)
+dim(colleges)
+```
+
+Now let's open up the data dictionary.
+
+```{r}
+dictionary <- read_csv("data/CollegeScorecardDataDictionary-09-08-2015.csv")
+dim(dictionary)
+```
+
+The data dictionary will tell us which variables are the cost and aid variables. Let's check out what we have in the data dictionary.
+
+```{r}
+names(dictionary)
+```
+
+It is `dev-category` that tells us which variables belong to which category. What are the categories?
+
+```{r}
+levels(factor(dictionary$`dev-category`))
+```
+
+Which variables belong to `cost` or `aid`?
+
+```{r}
+library(dplyr)
+cost_aid_names <- dictionary %>% 
+    filter(`dev-category` %in% c("cost", "aid")) %>% 
+    select(`VARIABLE NAME`, `NAME OF DATA ELEMENT`)
+
+cost_aid_names
+```
+
+You can see even from the first few lines of this that we'll need to use some combination of these variables to make meaningful comparisons between colleges. For example, of course public universities have `NA` for `NPT4_PRIV`; that value is specifically for private universities.
+
+## Understanding the Cost Data
+
+Let's look in more detail at all the cost variables.
+
+```{r}
+cost_names <- dictionary %>% 
+    filter(`dev-category` == "cost") %>% 
+    select(`VARIABLE NAME`, `NAME OF DATA ELEMENT`)
+
+cost_names
+```
+
+There are many ways the cost estimates are broken out, for different income levels at public vs. private institutions. It is true that often low-income students with high test scores can get better financial deals at private, very "expensive" schools than at state schools. I don't know if it is realistic to build that kind of information into the specific model we are going for right now, though, at least on a first attempt. I suggest that the best estimates of cost for our first round of models are these two variables:
+
+```{r}
+cost_aid_names[61:62,]
+```
+
+If we use those two values to define a new average cost estimate, we get an estimator with the fewest `NA` values possible compared to using other variables available.
+
+
+```{r}
+colleges <- colleges %>% 
+    rowwise() %>%
+    mutate(cost = sum(COSTT4_A, COSTT4_P, na.rm = TRUE)) %>%
+    mutate(cost = ifelse(cost == 0, NA, cost)) %>%
+    ungroup
+
+colleges$cost
+```
+
+
+How are `NA` variables for this new `cost` estimator distributed?
+
+```{r}
+colleges %>% 
+    group_by(PREDDEG) %>% 
+    summarize(`fraction NA` = mean(is.na(cost)))
+```
+
+The fraction of `NA` variables is pretty low (<10%) for certificate, associates, and bachelors degree awarding institutions. We may want to just remove the "type 0" and entirely graduate degree granting institutions for our clustering algorithm.
+
+For the rest of the 2-7% of `NA` values in this new `cost` estimator, we could start with substituting the mean/median for the whole variable, then maybe try something more complicated (random forest, etc.)
+
+
+## Understanding the Aid Data
+
+Let's look in more detail at all the cost variables.
+
+```{r}
+aid_names <- dictionary %>% 
+    filter(`dev-category` == "aid") %>% 
+    select(`VARIABLE NAME`, `NAME OF DATA ELEMENT`)
+
+aid_names
+```
+
+What are these 40 aid variables?
+
+```{r}
+aid_names$`NAME OF DATA ELEMENT`
+```
+
+Here, I suggest the most important variables are two up near the top (not broken out by income level or whether they were Pell or not Pell grants, etc.).
+
+```{r}
+aid_names[2:3,]
+```
+
+These would be used separately. How are `NA` values distributed for these two values?
+
+```{r}
+colleges %>% 
+    group_by(PREDDEG) %>% 
+    summarize(`fraction NA` = mean(is.na(PCTFLOAN)))
+```
+
+Here again we see quite low values of missing data for certificate, associate, and bachelor degree granting institutions.
+
+```{r}
+colleges %>% 
+    group_by(PREDDEG) %>% 
+    summarize(`fraction NA` = mean(is.na(DEBT_MDN)))
+```
+
+The fraction of missing data is getting high for certificate granting institutions, but it still low for associate and bachelor granting institutions.
+
+## Summary
+
+* I suggest for the aid data we use `PCTFLOAN` (the percent of undergraduate students receiving a federal student loan) and `DEBT_MDN` (the median amount of the loan principal upon entering repayment).
+* I suggest for the cost data we define a new variable that is the sum (removing `NA`) of `COSTT4_A` and `COSTT4_P`; this will give us an average cost of attendance.
+* I suggest we remove all schools from the data set that have `PREDDEG` of type 0 and 4, as they have high levels of missing data and don't really apply for a typical student entering a 2-year or 4-year school.
