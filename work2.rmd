@@ -1,0 +1,125 @@
+---
+title: "workInProgress"
+author: "Krishanu Banerjee"
+date: "Tuesday, September 20, 2016"
+output: word_document
+---
+
+
+
+```{r}
+library(RSQLite)
+library('magrittr')  
+library('tidyr')     
+library('dplyr')     
+library('ggplot2')   
+library('gridExtra') 
+library('bnlearn')   
+library('leaflet')   
+library('htmltools') 
+library('RColorBrewer')
+library("gplots")
+library("cluster")
+
+
+db <- dbConnect(dbDriver("SQLite"), "D:/college_score/output/database.sqlite")
+
+
+trainSummary<- dbGetQuery(db, "
+
+                   select LOWER(INSTNM) || '-' || ZIP AS INSTNM_ZIP
+                          
+                          ,AVG(ADM_RATE_ALL)
+                          
+                          ,AVG(SAT_AVG_ALL)
+                          
+                          ,AVG(COSTT4_P)
+                          
+                          --,AVG(CASE WHEN COSTT4_A = 'NA' THEN AVG(COSTT4_P) ELSE  COSTT4_A END)  --cost anual academic year 
+                          
+                          ,AVG(COSTT4_A)
+                          
+                          ,AVG(C150_4) -- completion rate
+                          
+                          ,AVG(PCTFLOAN) --federal loan rate
+                          
+                          ,AVG(UG25abv) -- undergrad over age 25
+                          
+                          --,AVG(CASE WHEN INC_N = 'PrivacySuppressed' THEN AVG(INC_N) ELSE  INC_N END )
+                          
+                          ,AVG(PAR_ED_N)
+                          
+                          ,AVG(PAR_ED_PCT_1STGEN)
+                          
+                          ,AVG(PCTPELL) -- pell grant percent
+                          
+                          ,AVG(DEBT_MDN) -- median debt
+                          
+                          ,AVG(gt_25k_p6) -- shareof students earning over 25k after 6 year
+                          
+                          --,AVG(CASE WHEN COMPL_RPY_5YR_RT = 'PrivacySuppressed' THEN AVG(COMPL_RPY_5YR_RT) ELSE  COMPL_RPY_5YR_RT END )
+                          
+                          ,AVG(NONCOM_RPY_5YR_RT)
+                          
+                          ,AVG(UGDS)
+                          
+                          ,AVG(female)
+                          
+                          ,AVG(married)
+                          
+                          ,AVG(dependent)
+                          
+                          ,AVG(veteran)
+                          
+                          ,AVG(first_gen)
+                          
+                          , AVG(md_faminc)
+                          
+                          ,AVG(pct_ba)
+                          
+                          , AVG(pct_grad_prof)
+                          
+                          , AVG(pct_born_us)
+                          
+                          , AVG(median_hh_inc)
+                          
+                          , AVG(poverty_rate)
+                          
+                          , AVG(unemp_rate)
+                          
+                          ,AVG(loan_ever)
+                          
+                          FROM Scorecard 
+                          
+                          WHERE
+                          
+                          LOWER(INSTNM) IN 
+                          
+                          (select LOWER(INSTNM) 
+                          
+                          from Scorecard 
+                          
+                          group by LOWER(INSTNM),ZIP
+                          
+                          HAVING (SUM(CASE WHEN SAT_AVG_ALL IS NULL THEN 0 ELSE 1 END) > 0))
+                          
+                          GROUP BY LOWER(INSTNM) || '-' || ZIP")
+
+
+for(i in 1:ncol(trainSummary)){
+  trainSummary[,i][is.na(trainSummary[,i])] <- mean(trainSummary[,i], na.rm = TRUE)
+}
+
+trainSum=trainSummary[-c(4)]
+
+#write.csv(trainSum,file="D:\\college_score\\refinedCollegeScoreData.csv")
+
+```
+
+The above code creates our proposed complete dataset for the analysis.
+
+```{r, echo=FALSE}
+
+```
+
+
