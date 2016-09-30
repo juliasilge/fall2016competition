@@ -1,0 +1,293 @@
+---
+title: "Exploratory_Earnings"
+author: "Krishanu Banerjee"
+date: "Thursday, September 29, 2016"
+output: word_document
+---
+ There are total 73 fields in Earnings data. I started analysis for 2013 data but no data. Same for 2012 and same thing again. There are only few fields populated for 2011. Probably for recent years, earnings data (for example, students earning 6 years after entry) not available. So  I have to focus on 2010 and 2009 data.   
+
+```{r}
+library(RSQLite)
+library('dplyr')     
+library('ggplot2')   
+library(mice)
+library(VIM)
+library(tigerstats)
+
+db <- dbConnect(dbDriver("SQLite"), "D:/college_score/output/database.sqlite")
+
+tmp_2010<- dbGetQuery(db, "
+                  select Year,lower(INSTNM)||'-'||ZIP as INSTNM
+,count_ed
+,count_nwne_p10
+                 ,count_wne_p10
+                 ,mn_earn_wne_p10
+                 ,md_earn_wne_p10
+                 ,pct10_earn_wne_p10
+                 ,pct25_earn_wne_p10
+                 ,pct75_earn_wne_p10
+                 ,pct90_earn_wne_p10
+                 ,sd_earn_wne_p10
+                 ,count_wne_inc1_p10
+                 ,count_wne_inc2_p10
+                 ,count_wne_inc3_p10
+                 ,count_wne_indep0_inc1_p10
+                 ,count_wne_indep0_p10
+                 ,count_wne_indep1_p10
+                 ,count_wne_male0_p10
+                 ,count_wne_male1_p10
+                 ,gt_25k_p10
+                 ,mn_earn_wne_inc1_p10
+                 ,mn_earn_wne_inc2_p10
+                 ,mn_earn_wne_inc3_p10
+,mn_earn_wne_indep0_inc1_p10
+,mn_earn_wne_indep0_p10
+                 ,mn_earn_wne_indep1_p10
+                 ,mn_earn_wne_male0_p10
+                 ,mn_earn_wne_male1_p10
+                 ,count_nwne_p6
+                 ,count_wne_p6
+                 ,mn_earn_wne_p6
+                 ,md_earn_wne_p6
+                 ,pct10_earn_wne_p6
+                 ,pct25_earn_wne_p6
+                 ,pct75_earn_wne_p6
+                 ,pct90_earn_wne_p6
+                 ,sd_earn_wne_p6
+                 ,count_wne_inc1_p6
+                 ,count_wne_inc2_p6
+                 ,count_wne_inc3_p6
+                 ,count_wne_indep0_inc1_p6
+                 ,count_wne_indep0_p6
+                 ,count_wne_indep1_p6
+                 ,count_wne_male0_p6
+                 ,count_wne_male1_p6
+                 ,gt_25k_p6
+                 ,mn_earn_wne_inc1_p6
+                 ,mn_earn_wne_inc2_p6
+                 ,mn_earn_wne_inc3_p6
+                 ,mn_earn_wne_indep0_inc1_p6
+                 ,mn_earn_wne_indep0_p6
+                 ,mn_earn_wne_indep1_p6
+                 ,mn_earn_wne_male0_p6
+                 ,mn_earn_wne_male1_p6
+                 ,count_nwne_p7
+                 ,count_wne_p7
+                 ,mn_earn_wne_p7
+                 ,sd_earn_wne_p7
+                 ,gt_25k_p7
+                 ,count_nwne_p8
+                 ,count_wne_p8
+                 ,mn_earn_wne_p8
+                 ,md_earn_wne_p8
+                 ,pct10_earn_wne_p8
+                 ,pct25_earn_wne_p8
+                 ,pct75_earn_wne_p8
+                 ,pct90_earn_wne_p8
+                 ,sd_earn_wne_p8
+                 ,gt_25k_p8
+                 ,count_nwne_p9
+                 ,count_wne_p9
+                 ,mn_earn_wne_p9
+                 ,sd_earn_wne_p9
+                 ,gt_25k_p9
+    from Scorecard 
+where Year in (2010)            
+                  ")
+
+tmp_2009<- dbGetQuery(db, "
+                  select Year,lower(INSTNM)||'-'||ZIP as INSTNM
+,count_ed
+,count_nwne_p10
+                 ,count_wne_p10
+                 ,mn_earn_wne_p10
+                 ,md_earn_wne_p10
+                 ,pct10_earn_wne_p10
+                 ,pct25_earn_wne_p10
+                 ,pct75_earn_wne_p10
+                 ,pct90_earn_wne_p10
+                 ,sd_earn_wne_p10
+                 ,count_wne_inc1_p10
+                 ,count_wne_inc2_p10
+                 ,count_wne_inc3_p10
+                 ,count_wne_indep0_inc1_p10
+                 ,count_wne_indep0_p10
+                 ,count_wne_indep1_p10
+                 ,count_wne_male0_p10
+                 ,count_wne_male1_p10
+                 ,gt_25k_p10
+                 ,mn_earn_wne_inc1_p10
+                 ,mn_earn_wne_inc2_p10
+                 ,mn_earn_wne_inc3_p10
+,mn_earn_wne_indep0_inc1_p10
+,mn_earn_wne_indep0_p10
+                 ,mn_earn_wne_indep1_p10
+                 ,mn_earn_wne_male0_p10
+                 ,mn_earn_wne_male1_p10
+                 ,count_nwne_p6
+                 ,count_wne_p6
+                 ,mn_earn_wne_p6
+                 ,md_earn_wne_p6
+                 ,pct10_earn_wne_p6
+                 ,pct25_earn_wne_p6
+                 ,pct75_earn_wne_p6
+                 ,pct90_earn_wne_p6
+                 ,sd_earn_wne_p6
+                 ,count_wne_inc1_p6
+                 ,count_wne_inc2_p6
+                 ,count_wne_inc3_p6
+                 ,count_wne_indep0_inc1_p6
+                 ,count_wne_indep0_p6
+                 ,count_wne_indep1_p6
+                 ,count_wne_male0_p6
+                 ,count_wne_male1_p6
+                 ,gt_25k_p6
+                 ,mn_earn_wne_inc1_p6
+                 ,mn_earn_wne_inc2_p6
+                 ,mn_earn_wne_inc3_p6
+                 ,mn_earn_wne_indep0_inc1_p6
+                 ,mn_earn_wne_indep0_p6
+                 ,mn_earn_wne_indep1_p6
+                 ,mn_earn_wne_male0_p6
+                 ,mn_earn_wne_male1_p6
+                 ,count_nwne_p7
+                 ,count_wne_p7
+                 ,mn_earn_wne_p7
+                 ,sd_earn_wne_p7
+                 ,gt_25k_p7
+                 ,count_nwne_p8
+                 ,count_wne_p8
+                 ,mn_earn_wne_p8
+                 ,md_earn_wne_p8
+                 ,pct10_earn_wne_p8
+                 ,pct25_earn_wne_p8
+                 ,pct75_earn_wne_p8
+                 ,pct90_earn_wne_p8
+                 ,sd_earn_wne_p8
+                 ,gt_25k_p8
+                 ,count_nwne_p9
+                 ,count_wne_p9
+                 ,mn_earn_wne_p9
+                 ,sd_earn_wne_p9
+                 ,gt_25k_p9
+    from Scorecard 
+where Year in (2009)            
+                  ")
+
+par(mfrow=c(1,2))
+hist(sapply(tmp_2010,function(x) sum(is.na(x))/nrow(tmp_2010)),breaks=10,main='Percent of NA in 2010')
+hist(sapply(tmp_2009,function(x) sum(is.na(x))/nrow(tmp_2009)),breaks=10,main='Percent of NA in 2009')
+
+```
+We can see only few fields (12) are not entirely null for 2010 but 2009 has more not null fields.
+
+2010 missing value imputation - For missing value imputation , I am using multivariate chain equation based package and predictive mean matching method (pmm)
+
+```{r}
+v=c()
+v=sapply(tmp_2010,function(x) sum(is.na(x))/nrow(tmp_2010))
+which(v <.6)
+EAR_data=tmp_2010[,which(v <.6)]
+sapply(EAR_data,function(x) sum(is.na(x))/nrow(EAR_data))
+aggr_plot <- aggr(EAR_data, col=c('navyblue','red'), numbers=TRUE, sortVars=TRUE, 
+                  labels=names(data), cex.axis=.7, gap=3,
+                  ylab=c("Histogram of missing data 2010","Pattern"))
+
+tempData <- mice(EAR_data,m=5,maxit=20,meth='pmm',seed=500,verbose=FALSE)
+densityplot(tempData,main='Desity plot of imputing (blue) missing data for 2010')
+EAR=complete(tempData,1)
+
+```
+2009 missing value imputation
+
+```{r}
+v_2009=c()
+v_2009=sapply(tmp_2009,function(x) sum(is.na(x))/nrow(tmp_2009))
+which(v_2009 <.6)
+EAR_data_2009=tmp_2009[,which(v_2009 <.6)]
+sapply(EAR_data_2009,function(x) sum(is.na(x))/nrow(EAR_data_2009))
+
+
+aggr_plot_2009 <- aggr(EAR_data_2009, col=c('navyblue','red'), numbers=TRUE, sortVars=TRUE, 
+                  labels=names(data), cex.axis=.7, gap=3,
+                  ylab=c("Histogram of missing data 2009","Pattern"))
+
+
+tempData_2009 <- mice(EAR_data_2009,m=5,maxit=10,meth='pmm',seed=500,verbose=FALSE)
+
+densityplot(tempData_2009,main='Desity plot for imputing (blue) missing data for 2009')
+
+EAR_2009=complete(tempData_2009,1)
+
+```
+
+
+PCA for 2010
+
+```{r}
+EAR_PCA=EAR[-c(1,2)]
+pr.out=prcomp(EAR_PCA,scale=TRUE)
+pr.out$rotation[,1:4]
+
+par(mfrow=c(1,1))
+biplot(pr.out,scale=0)
+pr.var =pr.out$sdev ^2
+pve=pr.var/sum(pr.var )
+pve
+
+par(mfrow=c(1,2))
+plot(pve,xlab=" Principal Component ",ylab=" Proportion of Variance Explained 2010", 
+     ylim=c(0,1),type='b')
+plot(cumsum (pve ), xlab=" Principal Component ", ylab ="
+Cumulative Proportion of Variance Explained 2010 ", ylim=c(0,1) ,
+     type='b')
+pr.out$rotation[,1:4]
+
+```
+
+PCA for 2009
+
+```{r}
+EAR_PCA_2009=EAR_2009[-c(1,2)]
+pr.out_2009=prcomp(EAR_PCA_2009,scale=TRUE)
+sort(pr.out_2009$rotation[,1],decreasing = TRUE)
+
+par(mfrow=c(1,1))
+biplot(pr.out_2009,scale=0)
+pr.var_2009 =pr.out_2009$sdev ^2
+pve_2009=pr.var_2009/sum(pr.var_2009 )
+pve_2009
+
+par(mfrow=c(1,2))
+plot(pve_2009,xlab=" Principal Component ",ylab=" Proportion of Variance Explained 2009 ", 
+     ylim=c(0,1),type='b')
+plot(cumsum (pve_2009 ), xlab=" Principal Component ", ylab ="
+Cumulative Proportion of Variance Explained 2009", ylim=c(0,1) ,
+     type='b')
+sort(pr.out_2009$rotation[,1],decreasing = TRUE)
+
+```
+
+Conclusion-
+
+1) For 2010 , we can see 90% of the variability explained by first two principal components and 96% of the variability explained by first four principal components. For 2009 , we can see 80% of the variability explained by first three principal components. For first trial, we can use first three/ four principal components.
+
+2) Important variables can be found from the sorted list above , if we don't want go with princiopal components.
+  In summary , important fields are--
+ #  'Mean/median earnings of students 6 yrs/8 yrs after' 
+ #  '10th/25th/75th  percentile of earnings of students working and not enrolled 10 years after entry'
+ #  Share of students earning over $25,000/year after 6/7/8/9 years  
+
+
+
+
+
+
+
+
+
+```{r, echo=FALSE}
+
+```
+
+
