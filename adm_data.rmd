@@ -1,0 +1,136 @@
+library(RSQLite)
+library('dplyr')     
+library('ggplot2')   
+library(mice)
+library(VIM)
+library(tigerstats)
+
+db <- dbConnect(dbDriver("SQLite"), "D:/college_score/output/database.sqlite")
+
+
+
+tmp_adm_2011<- dbGetQuery(db, "
+                      select lower(INSTNM)||'-'||ZIP as INSTNM
+---,ADM_RATE
+,ADM_RATE_ALL
+,SATVR25
+,SATVR75
+,SATMT25
+,SATMT75
+,SATWR25
+,SATWR75
+,SATVRMID
+,SATMTMID
+,SATWRMID
+,ACTCM25
+,ACTCM75
+,ACTEN25
+,ACTEN75
+,ACTMT25
+,ACTMT75
+,ACTWR25
+,ACTWR75
+,ACTCMMID
+,ACTENMID
+,ACTMTMID
+,ACTWRMID
+---,SAT_AVG
+,SAT_AVG_ALL
+from Scorecard 
+where Year in (2011)            
+                  ")
+
+
+tmp_adm_2012<- dbGetQuery(db, "
+                      select lower(INSTNM)||'-'||ZIP as INSTNM
+---,ADM_RATE
+,ADM_RATE_ALL
+,SATVR25
+,SATVR75
+,SATMT25
+,SATMT75
+,SATWR25
+,SATWR75
+,SATVRMID
+,SATMTMID
+,SATWRMID
+,ACTCM25
+,ACTCM75
+,ACTEN25
+,ACTEN75
+,ACTMT25
+,ACTMT75
+,ACTWR25
+,ACTWR75
+,ACTCMMID
+,ACTENMID
+,ACTMTMID
+,ACTWRMID
+---,SAT_AVG
+,SAT_AVG_ALL
+from Scorecard 
+where Year in (2012)            
+                  ")
+                  
+                  
+tmp_adm_2013<- dbGetQuery(db, "
+                      select lower(INSTNM)||'-'||ZIP as INSTNM
+---,ADM_RATE
+,ADM_RATE_ALL
+,SATVR25
+,SATVR75
+,SATMT25
+,SATMT75
+,SATWR25
+,SATWR75
+,SATVRMID
+,SATMTMID
+,SATWRMID
+,ACTCM25
+,ACTCM75
+,ACTEN25
+,ACTEN75
+,ACTMT25
+,ACTMT75
+,ACTWR25
+,ACTWR75
+,ACTCMMID
+,ACTENMID
+,ACTMTMID
+,ACTWRMID
+---,SAT_AVG
+,SAT_AVG_ALL
+from Scorecard 
+where Year in (2013)            
+                  ")
+                  
+                  
+
+
+sapply(tmp_adm_2012,function(x) sum(is.na(x))/nrow(tmp_adm_2012))
+sapply(tmp_adm_2013,function(x) sum(is.na(x))/nrow(tmp_adm_2013))
+sapply(tmp_adm_2011,function(x) sum(is.na(x))/nrow(tmp_adm_2011))
+
+
+
+
+length(unique(tmp_adm_2013$INSTNM[which(tmp_adm_2013$ADM_RATE_ALL !="NA")]))
+length(unique(tmp_adm_2012$INSTNM[which(tmp_adm_2012$ADM_RATE_ALL !="NA")]))
+length(unique(tmp_adm_2011$INSTNM[which(tmp_adm_2011$ADM_RATE_ALL !="NA")]))
+
+
+ADM_data=tmp_adm_2012[which(tmp_adm_2012$ADM_RATE_ALL !="NA"),]
+aggr_adm <- aggr(ADM_data, col=c('navyblue','red'), numbers=TRUE, sortVars=TRUE, 
+                  labels=names(data), cex.axis=.7, gap=3,
+                  ylab=c("Histogram of admission missing data 2012","Pattern"))
+
+
+temp_adm <- mice(ADM_data,m=5,maxit=10,meth='pmm',seed=500)
+densityplot(temp_adm,main='Desity plot for imputing (blue) missing admission data for 2012')
+ADM=complete(temp_adm,1)
+
+par(mfrow=c(1,1))
+plot(ADM$SAT_AVG_ALL,ADM$ADM_RATE_ALL,main='Admission rate all vs SAT score',
+     xlab='SAT_AVG_ALL',ylab='ADM_RATE_ALL')
+cor(ADM[,2:24])
+plot(ADM)
