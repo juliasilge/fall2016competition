@@ -26,7 +26,10 @@ Use this Markdown file to organize/compile the variables that we will include in
 * sum of `COSTT4_A` and `COSTT4_P`, removing `NA` values
 
 ## Earnings
-
+* 'pct75_earn_wne_p8'
+* 'pct90_earn_wne_p8'
+* 'pct25_earn_wne_p8'
+* 'mn_earn_wne_p8'
 ## Repayment
 * `RPY_3YR_RT_SUPP`
 * `LO_INC_RPY_3YR_RT_SUPP`
