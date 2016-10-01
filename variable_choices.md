@@ -6,6 +6,11 @@ Use this Markdown file to organize/compile the variables that we will include in
 
 ## Admissions
 
+* `ADM_RATE_ALL`
+* `SATVR25`
+* `SATVR75`
+* `SAT_AVG_ALL`
+
 ## Aid  
 * `PCTFLOAN`
 * `DEBT_MDN`
