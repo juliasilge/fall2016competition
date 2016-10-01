@@ -3,6 +3,20 @@
 Use this Markdown file to organize/compile the variables that we will include in our clustering algorithm.
 
 ## Academics
+* `RPY_3YR_RT_SUPP`
+* `LO_INC_RPY_3YR_RT_SUPP`
+* `MD_INC_RPY_3YR_RT_SUPP`
+* `HI_INC_RPY_3YR_RT_SUPP`
+* `COMPL_RPY_3YR_RT_SUPP`
+* `NONCOM_RPY_3YR_RT_SUPP`
+* `DEP_RPY_3YR_RT_SUPP`
+* `IND_RPY_3YR_RT_SUPP`
+* `PELL_RPY_3YR_RT_SUPP`
+* `NOPELL_RPY_3YR_RT_SUPP`
+* `FEMALE_RPY_3YR_RT_SUPP`
+* `MALE_RPY_3YR_RT_SUPP`
+* `FIRSTGEN_RPY_3YR_RT_SUPP`
+* `NOTFIRSTGEN_RPY_3YR_RT_SUPP`
 
 ## Admissions
 
