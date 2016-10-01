@@ -1,0 +1,104 @@
+---
+title: "Exploring Demographic Factors in College Scorecard Data"
+author: "Julia Silge"
+date: "`r Sys.Date()`"
+output:
+  html_document:
+    highlight: pygments
+    theme: paper
+    toc: yes
+---
+
+```{r, echo = FALSE, warning = FALSE}
+library(knitr)
+knitr::opts_chunk$set(cache = TRUE, warning = FALSE, message = FALSE, dpi = 180)
+options(width=100, dplyr.width = 150)
+```
+
+Let's explore and understand better the variables in the [College Scorecard data]((https://collegescorecard.ed.gov/data/)) that are related to *student demographics*.
+
+## Finding the Demographic Variables
+
+Let's open up the version of the College Scorecard data Jacob made and remove the rows that are all `NA`.
+
+```{r}
+library(readr)
+colleges <- read_csv("data/scorecard_reduced_bachelors.csv", na = c("NULL", "PrivacySuppressed"))
+dim(colleges)
+```
+
+Now let's open up the data dictionary.
+
+```{r}
+dictionary <- read_csv("data/CollegeScorecardDataDictionary-09-08-2015.csv")
+dim(dictionary)
+```
+
+The data dictionary will tell us which variables are the demographic variables. Let's check out what we have in the data dictionary.
+
+```{r}
+names(dictionary)
+```
+
+It is `dev-category` that tells us which variables belong to which category. What are the categories?
+
+```{r}
+levels(factor(dictionary$`dev-category`))
+```
+
+Which variables belong to `student`?
+
+```{r}
+library(dplyr)
+student_names <- dictionary %>% 
+    filter(`dev-category` %in% c("student")) %>% 
+    select(`VARIABLE NAME`, `NAME OF DATA ELEMENT`)
+
+student_names
+```
+
+## Understanding the Student Data
+
+What are these 94 aid variables?
+
+```{r}
+student_names$`NAME OF DATA ELEMENT`
+```
+
+## Variables for Diversity
+
+Let's look at the total share of enrollment of undergraduate degree-seeking students who identify with certain racial/ethnic groups. How many schools are missing data?
+
+```{r}
+colleges %>% 
+    summarize(`NA white` = mean(is.na(UGDS_WHITE)),
+              `NA black` = mean(is.na(UGDS_BLACK)),
+              `NA Hispanic` = mean(is.na(UGDS_HISP)),
+              `NA Asian` = mean(is.na(UGDS_ASIAN)))
+```
+
+These are obviously the same schools since these proportions match exactly. What kind of schools are these?
+
+```{r}
+colleges %>% 
+        filter(sch_deg == 3 & is.na(UGDS_WHITE)) %>% 
+        select(INSTNM)
+```
+
+## More Student Demographics
+
+Let's look at student characteristics like the percentage of undergraduates aged 25 and above and the percentage first-generation students.
+
+```{r}
+colleges %>% 
+    summarize(`NA over 25` = mean(is.na(UG25abv)),
+              `NA 1st gen` = mean(is.na(PAR_ED_PCT_1STGEN)))
+```
+
+Those variables for students over 25 and 1st generation students look useable.
+
+## Summary
+
+* I suggest for the student demographic data we use `UGDS_WHITE`, `UGDS_BLACK`, `UGDS_HISP`, and `UGDS_ASIAN` (the total share of enrollment of undergraduate degree-seeking students who identify with given racial/ethnic groups).
+* I suggest we also use `PAR_ED_PCT_1STGEN` and `UG25abv` to include information about first-generation students and students over 25.
+* Jacob's "folded" version of the College Scorecard data for four-year institutions that substitutes older years for missing data seems to be working very well.
