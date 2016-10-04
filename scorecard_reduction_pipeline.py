@@ -56,13 +56,14 @@ def reduce_data(df):
     reduced = reduced[reduced.index.isin(yearly.get_group(2013).index)]
     return reduced.drop('year', axis=1)
 
+def select_bachelors(df):
+    return df[df.sch_deg == 3].drop('sch_deg', axis=1)
+
 def select_features(df):
     for combo in combo_features.keys():
         df[combo] = df[combo_features[combo]].dropna(how='all').sum(axis=1)
+        df.drop(combo_features[combo], axis=1, inplace=True)
     return df
-
-def select_bachelors(df):
-    return df[df.sch_deg == 3].drop('sch_deg', axis=1)
 
 if __name__ == '__main__':
     path = 'data/college-scorecard-raw-data-030216'
