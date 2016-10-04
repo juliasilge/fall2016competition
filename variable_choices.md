@@ -3,6 +3,11 @@
 Use this Markdown file to organize/compile the variables that we will include in our clustering algorithm.
 
 ## Academics
+* sum of `PCIP01`, `PCIP03`, `PCIP05`, `PCIP09`, `PCIP13`, `PCIP16`, `PCIP23`, `PCIP24`, `PCIP26`, `PCIP27`, `PCIP30`, `PCIP31`, `PCIP40`, `PCIP42`, `PCIP45`, and `PCIP54`.  Call this category _Liberal Arts_.
+* sum of `PCIP04`, `PCIP10`, `PCIP11`, `PCIP12`, `PCIP14`, `PCIP22`, `PCIP25`, `PCIP29`, `PCIP43`, `PCIP44`, `PCIP43`, `PCIP50`, `PCIP51`, and `PCIP52`. Call this category _Professional_.
+* sum of - `PCIP15`, `PCIP19`, `PCIP41`, `PCIP46`, `PCIP47`, `PCIP48`, and `PCIP49`. Call this category _Vocational_.
+* sum of - `PCIP38` and `PCIP39`. Call this category _Religious_.
+
 
 ## Admissions
 
