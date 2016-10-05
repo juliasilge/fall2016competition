@@ -56,6 +56,26 @@ Use this Markdown file to organize/compile the variables that we will include in
 
 ## School
 
+* 'INSTNM' -- NOTE: Not for clustering, but for use as our unique identifier.
+* 'ZIP' -- NOTE: Not fur clustering, just for mapping purposes.
+* 'LOCALE' 
+* 'CONTROL'
+* 'CCBASIC'
+* 'HBCU'
+* 'PBI'
+* 'ANNHI'
+* 'TRIBAL'
+* 'AANAPII'
+* 'HSI'
+* 'NANTI'
+* 'WOMENONLY'
+* 'MENONLY'
+* 'DISTANCEONLY'
+* 'INEXPFTE'
+* 'AVGFACSAL'
+* 'PFTFAC'
+* 'HCM2'
+
 ## Student
 
 * `UGDS_WHITE`
