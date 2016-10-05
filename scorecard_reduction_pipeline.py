@@ -1,7 +1,7 @@
 import numpy as np
 import pandas as pd
 
-root_features = ['UNITID','INSTNM', 'sch_deg']
+root_features = ['UNITID','INSTNM', 'ZIP', 'sch_deg', 'CURROPER']
 
 include_features = [
                     'ADM_RATE_ALL', 'SATVR25', 'SATVR75', 'SAT_AVG_ALL',
@@ -15,7 +15,10 @@ include_features = [
                     'MD_INC_RPY_3YR_RT_SUPP', 'HI_INC_RPY_3YR_RT_SUPP',
                     'NONCOM_RPY_3YR_RT_SUPP', 'FIRSTGEN_RPY_3YR_RT_SUPP',
                     'UGDS_WHITE', 'UGDS_BLACK', 'UGDS_HISP', 'UGDS_ASIAN',
-                    'PAR_ED_PCT_1STGEN', 'UG25abv'
+                    'PAR_ED_PCT_1STGEN', 'UG25abv', 'LOCALE',
+                    'CONTROL', 'CCBASIC', 'HBCU', 'PBI', 'ANNHI', 'TRIBAL',
+                    'AANAPII', 'HSI', 'NANTI', 'WOMENONLY', 'MENONLY',
+                    'DISTANCEONLY', 'INEXPFTE', 'AVGFACSAL', 'PFTFAC', 'HCM2'
                     ]
 combo_features = {
                   'COST': ['COSTT4_A', 'COSTT4_P'],
@@ -57,7 +60,8 @@ def reduce_data(df):
     return reduced.drop('year', axis=1)
 
 def select_bachelors(df):
-    return df[df.sch_deg == 3].drop('sch_deg', axis=1)
+    df = df[df.sch_deg == 3].drop('sch_deg', axis=1)
+    return df[df.CURROPER == 1].drop('CURROPER', axis=1)
 
 def select_features(df):
     for combo in combo_features.keys():
@@ -71,4 +75,4 @@ if __name__ == '__main__':
     data = reduce_data(data)
     data = select_bachelors(data)
     data = select_features(data)
-    data.to_csv('data/scorecard_reduced_bachelors.csv')
+    data.to_csv('data/scorecard_reduced_features.csv')
