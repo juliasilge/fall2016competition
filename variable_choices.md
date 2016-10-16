@@ -61,6 +61,8 @@ Use this Markdown file to organize/compile the variables that we will include in
 * `LOCALE` 
 * `CONTROL`
 * `CCBASIC`
+* `CCUGPROF`
+* `CCSIZSET`
 * `HBCU`
 * `PBI`
 * `ANNHI`

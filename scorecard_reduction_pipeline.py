@@ -16,7 +16,8 @@ include_features = [
                     'NONCOM_RPY_3YR_RT_SUPP', 'FIRSTGEN_RPY_3YR_RT_SUPP',
                     'UGDS_WHITE', 'UGDS_BLACK', 'UGDS_HISP', 'UGDS_ASIAN',
                     'PAR_ED_PCT_1STGEN', 'UG25abv', 'LOCALE',
-                    'CONTROL', 'CCBASIC', 'HBCU', 'PBI', 'ANNHI', 'TRIBAL',
+                    'CONTROL', 'CCBASIC', 'CCUGPROF', 'CCSIZSET',
+                    'HBCU', 'PBI', 'ANNHI', 'TRIBAL',
                     'AANAPII', 'HSI', 'NANTI', 'WOMENONLY', 'MENONLY',
                     'DISTANCEONLY', 'INEXPFTE', 'AVGFACSAL', 'PFTFAC', 'HCM2'
                     ]
