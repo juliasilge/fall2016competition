@@ -42,8 +42,8 @@ Let's try imputing the missing values using the [missForest](https://cran.r-proj
 
 ```{r}
 library(missForest)
-colleges[,c(4:16,21)] <- lapply(colleges[,c(4:16,21)], as.factor)
-colleges_subset <- colleges[4:57]
+colleges[,c(4:18,23)] <- lapply(colleges[,c(4:18,23)], as.factor)
+colleges_subset <- colleges[4:59]
 impute_results <- missForest(as.data.frame(colleges_subset), verbose = TRUE)
 ```
 
@@ -155,7 +155,7 @@ colleges %>%
 
 Let's look at what are the most important variables for principal component analysis, since that is so related to k-means.
 
-```{r, fig.width=9, fig.height=6}
+```{r, fig.width=6, fig.height=9}
 library(reshape2)
 
 colleges_imputed <- scale(colleges_imputed)
@@ -164,12 +164,12 @@ melted <- melt(college_pca$rotation[,1:9])
 
 ggplot(data = melted[melted$Var2 == "PC1",]) +
     theme(legend.position = "none", 
-          axis.text.x= element_text(angle=45, hjust = 1), 
           axis.ticks.x = element_blank()) + 
     labs(x = "Measurements in College Scorecard data",
          y = "Relative importance in principle component",
          title = "Variables in PC1") +
-    geom_bar(aes(x=Var1, y=value, fill=Var1), stat="identity")
+    geom_bar(aes(x=Var1, y=value, fill=Var1), stat="identity") +
+    coord_flip()
 
 ```
 
