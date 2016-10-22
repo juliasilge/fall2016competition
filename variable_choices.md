@@ -1,6 +1,6 @@
 # Choosing Variables to Use from the College Scorecard Data
 
-Use this Markdown file to organize/compile the variables that we will include in our clustering algorithm.
+Use this Markdown file to organize/compile the variables that we will include in our clustering/similarity calculations.
 
 ## Academics
 * sum of `PCIP01`, `PCIP03`, `PCIP05`, `PCIP09`, `PCIP13`, `PCIP16`, `PCIP23`, `PCIP24`, `PCIP26`, `PCIP27`, `PCIP30`, `PCIP31`, `PCIP40`, `PCIP42`, `PCIP45`, and `PCIP54`.  Call this category _Liberal Arts_.
