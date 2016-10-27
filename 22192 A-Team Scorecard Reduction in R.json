@@ -1,0 +1,176 @@
+{
+  "paragraphs": [
+    {
+      "text": "%dep\nz.load(\"com.databricks:spark-csv_2.10:1.2.0\")",
+      "dateUpdated": "Oct 20, 2016 3:12:41 AM",
+      "config": {
+        "colWidth": 12.0,
+        "graph": {
+          "mode": "table",
+          "height": 300.0,
+          "optionOpen": false,
+          "keys": [],
+          "values": [],
+          "groups": [],
+          "scatter": {}
+        },
+        "enabled": true,
+        "editorMode": "ace/mode/scala"
+      },
+      "settings": {
+        "params": {},
+        "forms": {}
+      },
+      "jobName": "paragraph_1476933114915_554737288",
+      "id": "20161020-031154_944591188",
+      "result": {
+        "code": "SUCCESS",
+        "type": "TEXT",
+        "msg": "DepInterpreter(%dep) deprecated. Load dependency through GUI interpreter menu instead.\nres0: org.apache.zeppelin.dep.Dependency \u003d org.apache.zeppelin.dep.Dependency@6bc64f98\n"
+      },
+      "dateCreated": "Oct 20, 2016 3:11:54 AM",
+      "dateStarted": "Oct 20, 2016 3:12:41 AM",
+      "dateFinished": "Oct 20, 2016 3:12:48 AM",
+      "status": "FINISHED",
+      "progressUpdateIntervalMs": 500
+    },
+    {
+      "text": "%r\ndf \u003c- sql(sqlContext,\"select UNITID, INSTNM, ZIP, sch_deg, CUPPOPER from college_scorecard\")\nSparkR::head(df)",
+      "dateUpdated": "Oct 20, 2016 3:23:35 AM",
+      "config": {
+        "colWidth": 12.0,
+        "graph": {
+          "mode": "table",
+          "height": 300.0,
+          "optionOpen": false,
+          "keys": [
+            {
+              "name": "UNITID",
+              "index": 0.0,
+              "aggr": "sum"
+            }
+          ],
+          "values": [
+            {
+              "name": "CITY",
+              "index": 1.0,
+              "aggr": "sum"
+            }
+          ],
+          "groups": [],
+          "scatter": {
+            "xAxis": {
+              "name": "UNITID",
+              "index": 0.0,
+              "aggr": "sum"
+            },
+            "yAxis": {
+              "name": "CITY",
+              "index": 1.0,
+              "aggr": "sum"
+            }
+          }
+        },
+        "enabled": true,
+        "editorMode": "ace/mode/scala",
+        "editorHide": false
+      },
+      "settings": {
+        "params": {},
+        "forms": {}
+      },
+      "jobName": "paragraph_1476933161170_1658089865",
+      "id": "20161020-031241_840478538",
+      "result": {
+        "code": "SUCCESS",
+        "type": "TABLE",
+        "msg": "UNITID\tCITY\tNUMBRANCH\tWOMENONLY\nUNITID\tCITY\tNUMBRANCH\tWOMENONLY\n100636\tMONTGOMERY\t1\tNULL\n100654\tNORMAL\t1\tNULL\n100663\tBIRMINGHAM\t2\tNULL\n100672\tOZARK\t1\tNULL\n100690\tMONTGOMERY\t1\tNULL"
+      },
+      "dateCreated": "Oct 20, 2016 3:12:41 AM",
+      "dateStarted": "Oct 20, 2016 3:15:14 AM",
+      "dateFinished": "Oct 20, 2016 3:15:18 AM",
+      "status": "FINISHED",
+      "progressUpdateIntervalMs": 500
+    },
+    {
+      "text": "%r\ndf \u003c- sql(sqlContext,\"select UNITID, INSTNM, ZIP, sch_deg, CURROPER ADM_RATE_ALL, SATVR25, SATVR75, SAT_AVG_ALL, PCTFLOAN, DEBT_MDN, C150_4, C150_4_BLACK, C150_4_HISP, C150_4_ASIAN,\nC150_4_AIAN, C150_4_NRA, LO_INC_COMP_ORIG_YR6_RT, MD_INC_COMP_ORIG_YR6_RT, HI_INC_COMP_ORIG_YR6_RT,\nFIRSTGEN_COMP_ORIG_YR6_RT, pct75_earn_wne_p8, pct90_earn_wne_p8, pct25_earn_wne_p8, mn_earn_wne_p8, RPY_3YR_RT_SUPP,\nLO_INC_RPY_3YR_RT_SUPP, MD_INC_RPY_3YR_RT_SUPP, HI_INC_RPY_3YR_RT_SUPP, NONCOM_RPY_3YR_RT_SUPP, \nFIRSTGEN_RPY_3YR_RT_SUPP, UGDS_WHITE, UGDS_BLACK, UGDS_HISP, UGDS_ASIAN, PAR_ED_PCT_1STGEN, UG25abv, LOCALE,\nCONTROL, CCBASIC, CCUGPROF, CCSIZSET, HBCU, PBI, ANNHI, TRIBAL, AANAPII, HSI, NANTI, WOMENONLY, MENONLY,\nDISTANCEONLY, INEXPFTE, AVGFACSAL, PFTFAC, HCM2 from college_scorecard\")\nSparkR::head(df)",
+      "dateUpdated": "Oct 20, 2016 3:22:59 AM",
+      "config": {
+        "colWidth": 12.0,
+        "graph": {
+          "mode": "table",
+          "height": 300.0,
+          "optionOpen": false,
+          "keys": [
+            {
+              "name": "UNITID",
+              "index": 0.0,
+              "aggr": "sum"
+            }
+          ],
+          "values": [
+            {
+              "name": "INSTNM",
+              "index": 1.0,
+              "aggr": "sum"
+            }
+          ],
+          "groups": [],
+          "scatter": {
+            "xAxis": {
+              "name": "UNITID",
+              "index": 0.0,
+              "aggr": "sum"
+            },
+            "yAxis": {
+              "name": "INSTNM",
+              "index": 1.0,
+              "aggr": "sum"
+            }
+          }
+        },
+        "enabled": true,
+        "editorMode": "ace/mode/scala"
+      },
+      "settings": {
+        "params": {},
+        "forms": {}
+      },
+      "jobName": "paragraph_1476933214677_-1375811743",
+      "id": "20161020-031334_1920924557",
+      "result": {
+        "code": "SUCCESS",
+        "type": "TABLE",
+        "msg": "UNITID\tINSTNM\tZIP\tsch_deg\tADM_RATE_ALL\tSATVR25\tSATVR75\tSAT_AVG_ALL\tPCTFLOAN\tDEBT_MDN\tC150_4\tC150_4_BLACK\tC150_4_HISP\tC150_4_ASIAN\tC150_4_AIAN\tC150_4_NRA\tLO_INC_COMP_ORIG_YR6_RT\tMD_INC_COMP_ORIG_YR6_RT\tHI_INC_COMP_ORIG_YR6_RT\tFIRSTGEN_COMP_ORIG_YR6_RT\tpct75_earn_wne_p8\tpct90_earn_wne_p8\tpct25_earn_wne_p8\tmn_earn_wne_p8\tRPY_3YR_RT_SUPP\tLO_INC_RPY_3YR_RT_SUPP\tMD_INC_RPY_3YR_RT_SUPP\tHI_INC_RPY_3YR_RT_SUPP\tNONCOM_RPY_3YR_RT_SUPP\tFIRSTGEN_RPY_3YR_RT_SUPP\tUGDS_WHITE\tUGDS_BLACK\tUGDS_HISP\tUGDS_ASIAN\tPAR_ED_PCT_1STGEN\tUG25abv\tLOCALE\tCONTROL\tCCBASIC\tCCUGPROF\tCCSIZSET\tHBCU\tPBI\tANNHI\tTRIBAL\tAANAPII\tHSI\tNANTI\tWOMENONLY\tMENONLY\tDISTANCEONLY\tINEXPFTE\tAVGFACSAL\tPFTFAC\tHCM2\nUNITID\tINSTNM\tZIP\tsch_deg\tCURROPER\tSATVR25\tSATVR75\tSAT_AVG_ALL\tPCTFLOAN\tDEBT_MDN\tC150_4\tC150_4_BLACK\tC150_4_HISP\tC150_4_ASIAN\tC150_4_AIAN\tC150_4_NRA\tLO_INC_COMP_ORIG_YR6_RT\tMD_INC_COMP_ORIG_YR6_RT\tHI_INC_COMP_ORIG_YR6_RT\tFIRSTGEN_COMP_ORIG_YR6_RT\tpct75_earn_wne_p8\tpct90_earn_wne_p8\tpct25_earn_wne_p8\tmn_earn_wne_p8\tRPY_3YR_RT_SUPP\tLO_INC_RPY_3YR_RT_SUPP\tMD_INC_RPY_3YR_RT_SUPP\tHI_INC_RPY_3YR_RT_SUPP\tNONCOM_RPY_3YR_RT_SUPP\tFIRSTGEN_RPY_3YR_RT_SUPP\tUGDS_WHITE\tUGDS_BLACK\tUGDS_HISP\tUGDS_ASIAN\tPAR_ED_PCT_1STGEN\tUG25abv\tLOCALE\tCONTROL\tCCBASIC\tCCUGPROF\tCCSIZSET\tHBCU\tPBI\tANNHI\tTRIBAL\tAANAPII\tHSI\tNANTI\tWOMENONLY\tMENONLY\tDISTANCEONLY\tINEXPFTE\tAVGFACSAL\tPFTFAC\tHCM2\n100636\tCOMMUNITY COLLEGE OF THE AIR FORCE\t361126613\tNULL\tNULL\tNULL\tNULL\tNULL\tNULL\tNULL\tNULL\tNULL\tNULL\tNULL\tNULL\tNULL\tNULL\tNULL\tNULL\tNULL\tNULL\tNULL\tNULL\tNULL\tNULL\tNULL\tNULL\tNULL\tNULL\tNULL\tNULL\tNULL\tNULL\tNULL\tNULL\tNULL\tNULL\t1\tNULL\tNULL\tNULL\tNULL\tNULL\tNULL\tNULL\tNULL\tNULL\tNULL\tNULL\tNULL\tNULL\tNULL\tNULL\tNULL\tNULL\n100654\tALABAMA A \u0026 M UNIVERSITY\t35762\tNULL\tNULL\tNULL\tNULL\tNULL\tNULL\tNULL\tNULL\tNULL\tNULL\tNULL\tNULL\tNULL\tNULL\tNULL\tNULL\tNULL\tNULL\tNULL\tNULL\tNULL\tNULL\tNULL\tNULL\tNULL\tNULL\tNULL\tNULL\tNULL\tNULL\tNULL\tNULL\tNULL\tNULL\t1\tNULL\tNULL\tNULL\tNULL\tNULL\tNULL\tNULL\tNULL\tNULL\tNULL\tNULL\tNULL\tNULL\tNULL\t4072\tNULL\tNULL\n100663\tUNIVERSITY OF ALABAMA AT BIRMINGHAM\t352940110\tNULL\tNULL\tNULL\tNULL\tNULL\tNULL\tNULL\tNULL\tNULL\tNULL\tNULL\tNULL\tNULL\tNULL\tNULL\tNULL\tNULL\tNULL\tNULL\tNULL\tNULL\tNULL\tNULL\tNULL\tNULL\tNULL\tNULL\tNULL\tNULL\tNULL\tNULL\tNULL\tNULL\tNULL\t1\tNULL\tNULL\tNULL\tNULL\tNULL\tNULL\tNULL\tNULL\tNULL\tNULL\tNULL\tNULL\tNULL\tNULL\t5708\tNULL\tNULL\n100672\tALABAMA AVIATION AND TECHNICAL COLLEGE\t36360\tNULL\tNULL\tNULL\tNULL\tNULL\tNULL\tNULL\tNULL\tNULL\tNULL\tNULL\tNULL\tNULL\tNULL\tNULL\tNULL\tNULL\tNULL\tNULL\tNULL\tNULL\tNULL\tNULL\tNULL\tNULL\tNULL\tNULL\tNULL\tNULL\tNULL\tNULL\tNULL\tNULL\tNULL\t1\tNULL\tNULL\tNULL\tNULL\tNULL\tNULL\tNULL\tNULL\tNULL\tNULL\tNULL\tNULL\tNULL\tNULL\t4174\tNULL\tNULL\n100690\tSOUTHERN CHRISTIAN UNIVERSITY\t361173553\tNULL\tNULL\tNULL\tNULL\tNULL\tNULL\tNULL\tNULL\tNULL\tNULL\tNULL\tNULL\tNULL\tNULL\tNULL\tNULL\tNULL\tNULL\tNULL\tNULL\tNULL\tNULL\tNULL\tNULL\tNULL\tNULL\tNULL\tNULL\tNULL\tNULL\tNULL\tNULL\tNULL\tNULL\t2\tNULL\tNULL\tNULL\tNULL\tNULL\tNULL\tNULL\tNULL\tNULL\tNULL\tNULL\tNULL\tNULL\tNULL\t3092\tNULL\tNULL"
+      },
+      "dateCreated": "Oct 20, 2016 3:13:34 AM",
+      "dateStarted": "Oct 20, 2016 3:22:59 AM",
+      "dateFinished": "Oct 20, 2016 3:23:01 AM",
+      "status": "FINISHED",
+      "progressUpdateIntervalMs": 500
+    },
+    {
+      "config": {},
+      "settings": {
+        "params": {},
+        "forms": {}
+      },
+      "jobName": "paragraph_1476933377557_-1701462555",
+      "id": "20161020-031617_1806233181",
+      "dateCreated": "Oct 20, 2016 3:16:17 AM",
+      "status": "READY",
+      "progressUpdateIntervalMs": 500
+    }
+  ],
+  "name": "Scorecard Reduction in R",
+  "id": "MME4BSA7BX1476933114",
+  "angularObjects": {
+    "2BWGYT782210841473724296221": [],
+    "2BUXGWZQK210841473724296225": [],
+    "2BUW3CZW1210841473724296215": [],
+    "2BZ1JWSTQ210841475343811303": []
+  },
+  "config": {},
+  "info": {},
+  "source": "FCN"
+}
